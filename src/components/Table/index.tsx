@@ -4,6 +4,7 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import { columns } from './columns.ts'
 import { defaultData } from './data.ts'
 import { FooterCell } from '../Table/FooterCell'
+import { Form } from 'antd'
 
 export const Table = () => {
   const [data, setData] = useState(() => [...defaultData])
@@ -17,6 +18,7 @@ export const Table = () => {
     meta: {
       editedRows,
       setEditedRows,
+      enableRowSelection: true,
       revertData: (rowIndex: number, revert: boolean) => {
         if (revert) {
           setData(old => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)))
@@ -52,48 +54,55 @@ export const Table = () => {
         const setFilterFunc = (old: any[]) => old.filter((_row: any, index: number) => index !== rowIndex)
         setData(setFilterFunc)
         setOriginalData(setFilterFunc)
+      },
+      removeSelectedRows: (selectedRows: number[]) => {
+        const setFilterFunc = (old: any[]) => old.filter((_row, index) => !selectedRows.includes(index))
+        setData(setFilterFunc)
+        setOriginalData(setFilterFunc)
       }
     }
   })
   return (
     <>
-      <table className='wh_table'>
-        <thead className='wh_table_thead'>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr className='wh_table_tr' key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th className='wh_table_th' key={header.id}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
-              ))}
+      <Form>
+        <table className='wh_table'>
+          <thead className='wh_table_thead'>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr className='wh_table_tr' key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th className='wh_table_th' key={header.id}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className='wh_table_tbody'>
+            {table.getRowModel().rows.map(row => (
+              <tr className='wh_table_tr' key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <td
+                    className='wh_table_td'
+                    key={cell.id}
+                    style={{
+                      width: cell.column.getSize()
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colSpan={table.getCenterLeafColumns().length} align='left'>
+                <FooterCell table={table} />
+              </th>
             </tr>
-          ))}
-        </thead>
-        <tbody className='wh_table_tbody'>
-          {table.getRowModel().rows.map(row => (
-            <tr className='wh_table_tr' key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td
-                  className='wh_table_td'
-                  key={cell.id}
-                  style={{
-                    width: cell.column.getSize()
-                  }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th colSpan={table.getCenterLeafColumns().length} align='left'>
-              <FooterCell table={table} />
-            </th>
-          </tr>
-        </tfoot>
-      </table>
+          </tfoot>
+        </table>
+      </Form>
       <pre>{JSON.stringify(data, null, '\t')}</pre>
     </>
   )

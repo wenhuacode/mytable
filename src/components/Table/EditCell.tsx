@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react'
-import { Button, Space } from 'antd'
+import { Button, Space, Input } from 'antd'
 import { EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons'
 
 const EditCell = ({ row, table }: any) => {
@@ -20,16 +20,21 @@ const EditCell = ({ row, table }: any) => {
     meta?.removeRow(row.index)
   }
 
-  return meta?.editedRows[row.id] ? (
-    <Space className='wh_table_edit_cell'>
-      <Button size='small' onClick={setEditedRows} name='cancel' icon={<CloseOutlined />} />
-      <Button size='small' onClick={setEditedRows} name='done' icon={<CheckOutlined />} />
-    </Space>
-  ) : (
-    <Space className='wh_table_edit_cell'>
-      <Button size='small' onClick={setEditedRows} name='edit' icon={<EditOutlined />} />
-      <Button size='small' onClick={removeRow} name='edit' icon={<DeleteOutlined />} />
-    </Space>
+  return (
+    <div className='edit-cell-container'>
+      {meta?.editedRows[row.id] ? (
+        <Space className='wh_table_edit_cell-action'>
+          <Button size='small' onClick={setEditedRows} name='cancel' icon={<CloseOutlined />} />
+          <Button size='small' onClick={setEditedRows} name='done' icon={<CheckOutlined />} />
+        </Space>
+      ) : (
+        <Space className='wh_table_edit_cell-action'>
+          <Button size='small' onClick={setEditedRows} name='edit' icon={<EditOutlined />} />
+          <Button size='small' onClick={removeRow} name='edit' icon={<DeleteOutlined />} />
+        </Space>
+      )}
+      <Input type='checkbox' checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />
+    </div>
   )
 }
 

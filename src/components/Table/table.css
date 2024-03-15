@@ -48,3 +48,15 @@
   display: flex;
   gap: 5px;
 }
+
+.wh_table .edit-cell-container {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 4px;
+}
+
+.wh_table input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}

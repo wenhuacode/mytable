@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react'
-import { Input, Select, DatePicker } from 'antd'
+import { Input, Select, DatePicker, Form, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 
 type Option = {
@@ -59,14 +59,27 @@ const TableCell = ({ getValue, row, column, table }: any) => {
         )
       default:
         return (
-          <Input
-            className='wh_table_input'
-            value={value}
-            size='small'
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur}
-            width={10}
-          />
+          <Form.Item
+            style={{ margin: 0, padding: 0 }}
+            name={`${column.id + row.index}`}
+            initialValue={value}
+            rules={[
+              {
+                required: true,
+                message: ''
+              }
+            ]}
+          >
+            <Input
+              className='wh_table_input'
+              size='small'
+              placeholder='请填写信息'
+              onChange={e => setValue(e.target.value)}
+              onBlur={onBlur}
+              width={10}
+              required
+            />
+          </Form.Item>
         )
     }
   }

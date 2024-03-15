@@ -13,6 +13,7 @@ const columnHelper = createColumnHelper<Student>()
 
 export const columns = [
   columnHelper.display({
+    id: 'no',
     header: 'no',
     cell: ({ row, table }) =>
       (table.getSortedRowModel()?.flatRows?.findIndex(flatRow => flatRow.id === row.id) || 0) + 1,
