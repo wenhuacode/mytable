@@ -4,12 +4,14 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import { columns } from './columns.ts'
 import { defaultData } from './data.ts'
 import { FooterCell } from '../Table/FooterCell'
-import { Form } from 'antd'
+import { Form, FormInstance } from 'antd'
 
 export const Table = () => {
   const [data, setData] = useState(() => [...defaultData])
   const [originalData, setOriginalData] = useState(() => [...defaultData])
   const [editedRows, setEditedRows] = useState({})
+
+  const [form] = Form.useForm<FormInstance>()
 
   const table = useReactTable({
     data,
@@ -54,31 +56,34 @@ export const Table = () => {
         const setFilterFunc = (old: any[]) => old.filter((_row: any, index: number) => index !== rowIndex)
         setData(setFilterFunc)
         setOriginalData(setFilterFunc)
+        form.resetFields() //清除form 内容
       },
       removeSelectedRows: (selectedRows: number[]) => {
         const setFilterFunc = (old: any[]) => old.filter((_row, index) => !selectedRows.includes(index))
         setData(setFilterFunc)
         setOriginalData(setFilterFunc)
+        form.resetFields() //清除form 内容
       }
     }
   })
   return (
     <>
-      <Form>
-        <table className='wh_table'>
-          <thead className='wh_table_thead'>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr className='wh_table_tr' key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th className='wh_table_th' key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className='wh_table_tbody'>
-            {table.getRowModel().rows.map(row => (
+      <table className='wh_table'>
+        <colgroup></colgroup>
+        <thead className='wh_table_thead'>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr className='wh_table_tr' key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th className='wh_table_th' key={header.id}>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody className='wh_table_tbody'>
+          {table.getRowModel().rows.map(row => (
+            <Form form={form} key={row.id} component={false}>
               <tr className='wh_table_tr' key={row.id}>
                 {row.getVisibleCells().map(cell => (
                   <td
@@ -92,17 +97,17 @@ export const Table = () => {
                   </td>
                 ))}
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th colSpan={table.getCenterLeafColumns().length} align='left'>
-                <FooterCell table={table} />
-              </th>
-            </tr>
-          </tfoot>
-        </table>
-      </Form>
+            </Form>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colSpan={table.getCenterLeafColumns().length} align='left'>
+              <FooterCell table={table} />
+            </th>
+          </tr>
+        </tfoot>
+      </table>
       <pre>{JSON.stringify(data, null, '\t')}</pre>
     </>
   )

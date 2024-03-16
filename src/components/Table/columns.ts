@@ -14,10 +14,17 @@ const columnHelper = createColumnHelper<Student>()
 export const columns = [
   columnHelper.display({
     id: 'no',
-    header: 'no',
+    header: '',
     cell: ({ row, table }) =>
       (table.getSortedRowModel()?.flatRows?.findIndex(flatRow => flatRow.id === row.id) || 0) + 1,
-    size: 50
+    size: 30
+  }),
+
+  columnHelper.display({
+    id: 'edit',
+    header: '操作',
+    cell: EditCell,
+    size: 80
   }),
 
   columnHelper.accessor('studentId', {
@@ -35,7 +42,9 @@ export const columns = [
     header: '全名',
     cell: TableCell,
     meta: {
-      type: 'text'
+      type: 'text',
+      required: true,
+      pattern: '^[a-zA-Z ]+$'
     },
     size: 320
   }),
@@ -45,7 +54,8 @@ export const columns = [
     header: '生日',
     cell: TableCell,
     meta: {
-      type: 'date'
+      type: 'date',
+      required: true
     },
     size: 320
   }),
@@ -56,6 +66,7 @@ export const columns = [
     cell: TableCell,
     meta: {
       type: 'select',
+      required: true,
       options: [
         { value: 'Computer Science', label: 'Computer Science' },
         { value: 'Communications', label: 'Communications' },
@@ -64,11 +75,5 @@ export const columns = [
       ]
     },
     size: 300
-  }),
-  columnHelper.display({
-    id: 'edit',
-    header: '操作',
-    cell: EditCell,
-    size: 100
   })
 ]
