@@ -24,7 +24,7 @@ export const columns = [
     id: 'edit',
     header: '操作',
     cell: EditCell,
-    size: 80
+    size: 60
   }),
 
   columnHelper.accessor('studentId', {
@@ -34,7 +34,7 @@ export const columns = [
       type: 'number'
     },
     enableResizing: false,
-    size: 200
+    size: 150
   }),
 
   columnHelper.accessor('name', {
