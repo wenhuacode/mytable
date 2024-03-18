@@ -192,8 +192,13 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
   }
 
   return (
-    <div className='wh-table-span' autoFocus onClick={editCellStatus} style={{ width: '100%', height: '100%' }}>
-      {value ? value : '-'}
+    <div
+      className='flex justify-start items-center'
+      autoFocus
+      onClick={editCellStatus}
+      style={{ width: '100%', height: '100%' }}
+    >
+      {value}
     </div>
   )
 }

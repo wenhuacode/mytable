@@ -28,12 +28,12 @@ export const columns = [
   }),
 
   columnHelper.accessor('studentId', {
-    header: 'ID',
+    header: 'studentId',
     cell: TableCell,
     meta: {
       type: 'number'
     },
-    enableResizing: false,
+    // enableResizing: false,
     size: 150
   }),
 

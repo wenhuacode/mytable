@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { useTableNav } from '@table-nav/react'
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  ColumnResizeMode,
-  ColumnResizeDirection
-} from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { columns } from './columns.ts'
 import { defaultData } from './data.ts'
 import { FooterCell } from '../Table/FooterCell'
@@ -15,7 +9,7 @@ import './index.css'
 import dayjs from 'dayjs'
 import React from 'react'
 
-export const WhTable = () => {
+export const Table = () => {
   const [data, setData] = useState(() => [...defaultData])
   const [originalData, setOriginalData] = useState(() => [...defaultData])
   const [editedRows, setEditedRows] = useState({})
@@ -23,17 +17,9 @@ export const WhTable = () => {
   const [form] = Form.useForm<FormInstance>()
   const { listeners } = useTableNav({ debug: false })
 
-  const [columnResizeMode, setColumnResizeMode] = React.useState<ColumnResizeMode>('onChange')
-
-  const [columnResizeDirection, setColumnResizeDirection] = React.useState<ColumnResizeDirection>('ltr')
-
-  const rerender = React.useReducer(() => ({}), {})[1]
-
   const table = useReactTable({
     data,
     columns,
-    columnResizeMode,
-    columnResizeDirection,
     getCoreRowModel: getCoreRowModel(),
     meta: {
       editedRows,
@@ -85,6 +71,24 @@ export const WhTable = () => {
     }
   })
 
+  /**
+   * 动态调整列宽
+   * Instead of calling `column.getSize()` on every render for every header
+   * and especially every data cell (very expensive),
+   * we will calculate all column sizes at once at the root table level in a useMemo
+   * and pass the column sizes down as CSS variables to the <table> element.
+   */
+  const columnSizeVars = React.useMemo(() => {
+    const headers = table.getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]!
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+    }
+    return colSizes
+  }, [table.getState().columnSizingInfo])
+
   return (
     <div>
       <div className='flex flex-col'>
@@ -93,11 +97,6 @@ export const WhTable = () => {
             <div className='overflow-hidden'>
               <table
                 {...listeners}
-                {...{
-                  style: {
-                    width: table.getCenterTotalSize()
-                  }
-                }}
                 cellSpacing={0}
                 className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'
               >
@@ -107,13 +106,6 @@ export const WhTable = () => {
                       {headerGroup.headers.map(header => {
                         return (
                           <th
-                            {...{
-                              key: header.id,
-                              colSpan: header.colSpan,
-                              style: {
-                                width: header.getSize()
-                              }
-                            }}
                             key={header.id}
                             tabIndex={-1}
                             colSpan={header.colSpan}
@@ -123,25 +115,6 @@ export const WhTable = () => {
                             {header.isPlaceholder
                               ? null
                               : flexRender(header.column.columnDef.header, header.getContext())}
-                            <div
-                              {...{
-                                onDoubleClick: () => header.column.resetSize(),
-                                onMouseDown: header.getResizeHandler(),
-                                onTouchStart: header.getResizeHandler(),
-                                className: `resizer ${table.options.columnResizeDirection} ${
-                                  header.column.getIsResizing() ? 'isResizing' : ''
-                                }`,
-                                style: {
-                                  transform:
-                                    columnResizeMode === 'onEnd' && header.column.getIsResizing()
-                                      ? `translateX(${
-                                          (table.options.columnResizeDirection === 'rtl' ? -1 : 1) *
-                                          (table.getState().columnSizingInfo.deltaOffset ?? 0)
-                                        }px)`
-                                      : ''
-                                }
-                              }}
-                            />
                           </th>
                         )
                       })}
@@ -155,12 +128,6 @@ export const WhTable = () => {
                         {row.getVisibleCells().map(cell => {
                           return (
                             <td
-                              {...{
-                                key: cell.id,
-                                style: {
-                                  width: cell.column.getSize()
-                                }
-                              }}
                               key={cell.id}
                               role='gridcell'
                               tabIndex={-1}
