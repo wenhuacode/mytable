@@ -5,6 +5,7 @@ import { type DragEndEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { FormInstance } from 'antd'
 import { HolderOutlined } from '@ant-design/icons'
 
 const DraggableTableHeader = ({
@@ -71,7 +72,19 @@ const DraggableTableHeader = ({
   )
 }
 
-const DragAlongCell = ({ cell, setEditedRows, row }: { cell: Cell<any, unknown>; setEditedRows: any; row: any }) => {
+const DragAlongCell = ({
+  cell,
+  setEditedRows,
+  row,
+  form,
+  table
+}: {
+  cell: Cell<any, unknown>
+  setEditedRows: any
+  row: any
+  form: FormInstance
+  table: Table<any>
+}) => {
   const { isDragging, setNodeRef, transform } = useSortable({
     id: cell.column.id
   })
@@ -101,6 +114,20 @@ const DragAlongCell = ({ cell, setEditedRows, row }: { cell: Cell<any, unknown>;
       className='px-0.1 py-0.0  text-sm  text-gray-800 dark:text-gray-200'
       onKeyDown={e => {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+          //校验产品栏是否存在值
+          if (cell.row.getValue('productName') !== undefined) {
+            const tableMeta: any = table.options.meta
+            const cellvalue = form.getFieldValue(cell.column.id + row.id)
+
+            if (cellvalue) {
+              //校验表单值是否合法
+              //将表单的值更新
+              tableMeta.updateData(row.index, cell.column.id, form.getFieldValue(cell.column.id + row.id))
+            }
+          } else {
+            form.resetFields()
+          }
+
           setEditedRows((old: []) => ({
             ...old,
             [cell.column.id + row.id]: !old[(cell.column.id + row.id) as any]

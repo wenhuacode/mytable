@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useState, useRef, KeyboardEvent } from 'react'
 import { Input, Select, Form, InputNumber } from 'antd'
 import dayjs from 'dayjs'
 import { Cell } from '@tanstack/react-table'
-import { limitDecimal, limitDecimalPoint, priceFilterNoNum, priceFilterPointNoNum } from './util'
+import { getNewCellID, limitDecimal, limitDecimalPoint, priceFilterNoNum, priceFilterPointNoNum } from './util'
 
 type Option = {
   label: string
@@ -24,10 +24,17 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
   }
 
   // 判断产品是否已经录入
-  const productStatus = () => {}
+  const productStatus = () => {
+    return cell.row.getValue('productName') !== undefined
+  }
 
   const intergerOnBule = () => {
-    tableMeta?.updateData(row.index, column.id, value)
+    if (productStatus()) {
+      tableMeta?.updateData(row.index, column.id, value)
+    } else {
+      // 清除form 值
+      tableMeta.form.resetFields()
+    }
     editCellStatus()
   }
 
@@ -59,56 +66,8 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     editCellStatus()
   }
 
-  const getNewCellID = (e: string, cell: any) => {
-    let cell_id
-    let new_column_id
-    let status = true
-    // 分割cell_id
-    const [row_id, column_id] = cell?.id.split('_')
-
-    const columns: string[] = []
-    table.getAllColumns().map((item: any) => {
-      columns.push(item.id)
-    })
-
-    switch (e) {
-      case 'ArrowUp':
-        cell_id = (Number(row_id) - 1).toString()
-        if (cell_id === '-1') {
-          cell_id = row_id
-        }
-        new_column_id = column_id
-        break
-      case 'ArrowDown':
-        cell_id = (Number(row_id) + 1).toString()
-        if (Number(cell_id) >= table.getRowCount) {
-          cell_id = row_id
-        }
-        new_column_id = column_id
-        break
-      case 'ArrowLeft':
-        cell_id = row_id
-        new_column_id = columns[columns.indexOf(column_id) - 1]
-        if (columns.indexOf(column_id) - 1 <= 1) {
-          new_column_id = column_id
-        }
-        break
-      case 'ArrowRight':
-        cell_id = row_id
-        new_column_id = columns[columns.indexOf(column_id) + 1]
-        if (columns.indexOf(column_id) + 1 >= columns.length) {
-          new_column_id = column_id
-        }
-        break
-      default:
-        status = false
-    }
-
-    return { cell_id, new_column_id, status }
-  }
-
   const keyBoardChange = async (e: KeyboardEvent, cell: any) => {
-    const { cell_id, new_column_id, status } = getNewCellID(e.code, cell)
+    const { cell_id, new_column_id, status } = getNewCellID(e.code, cell, table)
     if (!status) {
       return
     }
@@ -198,7 +157,9 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               autoFocus
               size='small'
               style={{ width: '100%', height: '100%' }}
-              onChange={e => (row.productName ? setValue(e) : undefined)}
+              onChange={e => {
+                productStatus() ? setValue(e) : undefined
+              }}
               required
               min={0}
               step={1}

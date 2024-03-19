@@ -61,7 +61,8 @@ export const WhTable = () => {
       editedRows,
       setEditedRows,
       enableRowSelection: true,
-
+      // 表单
+      form: form,
       // 产品添加model
       selectProductShow,
       setSelectProductShow,
@@ -157,7 +158,14 @@ export const WhTable = () => {
                   <tr key={row.id} className='hover:bg-gray-100 dark:hover:bg-gray-700'>
                     {row.getVisibleCells().map(cell => (
                       <SortableContext key={cell.id} items={columnOrder} strategy={horizontalListSortingStrategy}>
-                        <DragAlongCell key={cell.id} cell={cell} setEditedRows={setEditedRows} row={row} />
+                        <DragAlongCell
+                          key={cell.id}
+                          cell={cell}
+                          setEditedRows={setEditedRows}
+                          row={row}
+                          form={form}
+                          table={table}
+                        />
                       </SortableContext>
                     ))}
                   </tr>
