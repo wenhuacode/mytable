@@ -1,19 +1,34 @@
 import { useState } from 'react'
 import { useTableNav } from '@table-nav/react'
 import {
-  flexRender,
   getCoreRowModel,
   useReactTable,
   ColumnResizeMode,
-  ColumnResizeDirection
+  ColumnResizeDirection,
+  flexRender
 } from '@tanstack/react-table'
 import { columns } from './columns.ts'
 import { defaultData } from './data.ts'
 import { FooterCell } from '../Table/FooterCell'
-import { Form, FormInstance } from 'antd'
+import { Form, FormInstance, Modal } from 'antd'
+
+// needed for table body level scope DnD setup
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
+import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+
 import './index.css'
 import dayjs from 'dayjs'
 import React from 'react'
+import { DragAlongCell, DraggableTableHeader, handleDragEnd } from './DraggableTable.tsx'
 
 export const WhTable = () => {
   const [data, setData] = useState(() => [...defaultData])
@@ -23,11 +38,15 @@ export const WhTable = () => {
   const [form] = Form.useForm<FormInstance>()
   const { listeners } = useTableNav({ debug: false })
 
+  // 拖拽拉伸功能区块
   const [columnResizeMode, setColumnResizeMode] = React.useState<ColumnResizeMode>('onChange')
-
   const [columnResizeDirection, setColumnResizeDirection] = React.useState<ColumnResizeDirection>('ltr')
 
-  const rerender = React.useReducer(() => ({}), {})[1]
+  // 列拖拽排序
+  const [columnOrder, setColumnOrder] = React.useState<string[]>(() => columns.map(c => c.id!))
+
+  // 产品弹窗状态
+  const [selectProductShow, setSelectProductShow] = useState<boolean>(false)
 
   const table = useReactTable({
     data,
@@ -35,10 +54,18 @@ export const WhTable = () => {
     columnResizeMode,
     columnResizeDirection,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      columnOrder
+    },
     meta: {
       editedRows,
       setEditedRows,
       enableRowSelection: true,
+
+      // 产品添加model
+      selectProductShow,
+      setSelectProductShow,
+      ////////////////////////////////////////////////////////////////
       revertData: (rowIndex: number, revert: boolean) => {
         if (revert) {
           setData(old => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)))
@@ -85,119 +112,84 @@ export const WhTable = () => {
     }
   })
 
+  const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}))
+
   return (
-    <div>
-      <div className='flex flex-col'>
-        <div className='-m-1.5 overflow-x-auto'>
-          <div>
-            <div className='overflow-hidden'>
-              <table
-                {...listeners}
-                {...{
-                  style: {
-                    width: table.getCenterTotalSize()
-                  }
-                }}
-                cellSpacing={0}
-                className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'
-              >
-                <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
-                  {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map(header => {
-                        return (
-                          <th
-                            {...{
-                              key: header.id,
-                              colSpan: header.colSpan,
-                              style: {
-                                width: header.getSize()
-                              }
-                            }}
-                            key={header.id}
-                            tabIndex={-1}
-                            colSpan={header.colSpan}
-                            scope='col'
-                            className='px-0.1 py-2 text-start text-xs font-medium text-gray-500 uppercase'
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(header.column.columnDef.header, header.getContext())}
-                            <div
-                              {...{
-                                onDoubleClick: () => header.column.resetSize(),
-                                onMouseDown: header.getResizeHandler(),
-                                onTouchStart: header.getResizeHandler(),
-                                className: `resizer ${table.options.columnResizeDirection} ${
-                                  header.column.getIsResizing() ? 'isResizing' : ''
-                                }`,
-                                style: {
-                                  transform:
-                                    columnResizeMode === 'onEnd' && header.column.getIsResizing()
-                                      ? `translateX(${
-                                          (table.options.columnResizeDirection === 'rtl' ? -1 : 1) *
-                                          (table.getState().columnSizingInfo.deltaOffset ?? 0)
-                                        }px)`
-                                      : ''
-                                }
-                              }}
-                            />
-                          </th>
-                        )
-                      })}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody className='divide-y divide-gray-200 dark:divide-gray-700'>
-                  {table.getRowModel().rows.map(row => (
-                    <Form form={form} key={row.id} component={false}>
-                      <tr key={row.id} className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-                        {row.getVisibleCells().map(cell => {
-                          return (
-                            <td
-                              {...{
-                                key: cell.id,
-                                style: {
-                                  width: cell.column.getSize()
-                                }
-                              }}
-                              key={cell.id}
-                              role='gridcell'
-                              tabIndex={-1}
-                              style={{
-                                width: cell.column.getSize()
-                              }}
-                              className='px-0.1 py-0.0  text-xs  text-gray-800 dark:text-gray-200'
-                              onKeyDown={e => {
-                                if (e.code === 'Enter') {
-                                  setEditedRows((old: []) => ({
-                                    ...old,
-                                    [cell.column.id + row.id]: !old[(cell.column.id + row.id) as any]
-                                  }))
-                                }
-                              }}
-                            >
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
-                          )
-                        })}
-                      </tr>
-                    </Form>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th colSpan={table.getCenterLeafColumns().length} align='left'>
-                      <FooterCell table={table} />
-                    </th>
+    <DndContext
+      collisionDetection={closestCenter}
+      modifiers={[restrictToHorizontalAxis]}
+      onDragEnd={e => handleDragEnd(e, setColumnOrder)}
+      sensors={sensors}
+    >
+      {/* <div className='flex flex-col'> */}
+      {/* <div className='-m-1.5 overflow-x-auto'> */}
+      <div className='p-2 block max-w-full  overflow-x-auto '>
+        <div>
+          <table
+            {...listeners}
+            {...{
+              style: {
+                width: table.getCenterTotalSize()
+              }
+            }}
+            cellSpacing={0}
+            className='min-w-full divide-y divide-gray-200 dark:divide-gray-700 '
+          >
+            <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
+                    {headerGroup.headers.map(header => (
+                      <DraggableTableHeader
+                        key={header.id}
+                        header={header}
+                        table={table}
+                        columnResizeMode={columnResizeMode}
+                      />
+                    ))}
+                  </SortableContext>
+                </tr>
+              ))}
+            </thead>
+            <tbody className='divide-y divide-gray-200 dark:divide-gray-700'>
+              {table.getRowModel().rows.map(row => (
+                <Form form={form} key={row.id} component={false}>
+                  <tr key={row.id} className='hover:bg-gray-100 dark:hover:bg-gray-700'>
+                    {row.getVisibleCells().map(cell => (
+                      <SortableContext key={cell.id} items={columnOrder} strategy={horizontalListSortingStrategy}>
+                        <DragAlongCell key={cell.id} cell={cell} setEditedRows={setEditedRows} row={row} />
+                      </SortableContext>
+                    ))}
                   </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
+                </Form>
+              ))}
+            </tbody>
+            <tfoot className='px-0.1 py-2 bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+              {table.getFooterGroups().map((footerGroup: any) => (
+                <tr key={footerGroup.id} className='text-xs text-gray-700'>
+                  {footerGroup.headers.map((header: any) => (
+                    <th key={header.id} colSpan={header.colSpan} className='px-0.1 py-2 text-sm text-start '>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.footer, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </tfoot>
+          </table>
+          <FooterCell table={table} />
         </div>
       </div>
+      {/* </div>
+      </div> */}
+      {selectProductShow && (
+        <Modal
+          title={'选择产品'}
+          open={selectProductShow}
+          onCancel={() => setSelectProductShow(false)}
+          onOk={() => console.log(table.options.meta)}
+        />
+      )}
       <pre>{JSON.stringify(data, null, '\t')}</pre>
-    </div>
+    </DndContext>
   )
 }
