@@ -1,8 +1,15 @@
 import { ChangeEvent, useEffect, useState, useRef, KeyboardEvent } from 'react'
 import { Input, Select, Form, InputNumber } from 'antd'
-import dayjs from 'dayjs'
 import { Cell } from '@tanstack/react-table'
-import { getNewCellID, limitDecimal, limitDecimalPoint, priceFilterNoNum, priceFilterPointNoNum } from './util'
+import {
+  changeRowData,
+  formattedNum,
+  getNewCellID,
+  limitDecimal,
+  limitDecimalPoint,
+  priceFilterNoNum,
+  priceFilterPointNoNum
+} from './util'
 
 type Option = {
   label: string
@@ -28,9 +35,11 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     return cell.row.getValue('productName') !== undefined
   }
 
-  const intergerOnBule = () => {
+  const onBlur = () => {
     if (productStatus()) {
-      tableMeta?.updateData(row.index, column.id, value)
+      // tableMeta?.updateData(row.index, column.id, value)
+      // 数据设置
+      changeRowData(tableMeta, cell, value)
     } else {
       // 清除form 值
       tableMeta.form.resetFields()
@@ -38,8 +47,35 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     editCellStatus()
   }
 
-  const onBlur = () => {
-    tableMeta?.updateData(row.index, column.id, value)
+  //数量change
+  const onQtyChange = (e: any) => {
+    if (productStatus()) {
+      if (!e || e === 0 || e === null) {
+        setValue(1)
+        return
+      }
+      setValue(e)
+    }
+  }
+
+  const onPriceChange = (e: any) => {
+    if (productStatus()) {
+      if (!e || e === 0 || e === null) {
+        setValue(0)
+        return
+      }
+      setValue(e)
+    }
+  }
+
+  const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    console.log(e)
+    if (productStatus()) {
+      setValue(e)
+
+      changeRowData(tableMeta, cell, e)
+    }
+
     editCellStatus()
   }
 
@@ -50,21 +86,20 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     }))
   }
 
-  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value)
-  }
+  // const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  //   setValue(e)
 
-  const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setValue(e)
-    tableMeta?.updateData(row.index, column.id, e)
-    editCellStatus()
-  }
+  //   // tableMeta?.updateData(row.index, column.id, e)
+  //   // 数据设置
+  //   changeRowData(tableMeta, cell, e)
+  //   editCellStatus()
+  // }
 
-  const onDatePickerChange = (date: any) => {
-    setValue(dayjs(date).format('YYYY-MM-DD'))
-    tableMeta?.updateData(row.index, column.id, dayjs(date).format('YYYY-MM-DD'))
-    editCellStatus()
-  }
+  // const onDatePickerChange = (date: any) => {
+  //   setValue(dayjs(date).format('YYYY-MM-DD'))
+  //   tableMeta?.updateData(row.index, column.id, dayjs(date).format('YYYY-MM-DD'))
+  //   editCellStatus()
+  // }
 
   const keyBoardChange = async (e: KeyboardEvent, cell: any) => {
     const { cell_id, new_column_id, status } = getNewCellID(e.code, cell, table)
@@ -99,13 +134,13 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
             <Select
               className='wh_table_select'
               autoFocus
-              onChange={onSelectChange}
+              onSelect={onSelectChange}
+              // onChange={onSelectChange}
               onBlur={editCellStatus}
-              allowClear={true}
+              // allowClear={true}
               defaultOpen={true}
               size='small'
               style={{ width: '100%', height: '100%' }}
-              variant='borderless'
               onKeyDown={e => keyBoardChange(e, cell)}
             >
               {columnMeta?.options?.map((option: Option) => (
@@ -145,7 +180,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
           <Form.Item
             style={{ margin: 0 }}
             name={`${column.id + row.id}`}
-            initialValue={initialValue}
+            initialValue={value}
             rules={[
               { required: true, message: `` },
               { pattern: /^[0-9]+$/, message: '' }
@@ -158,16 +193,16 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               size='small'
               style={{ width: '100%', height: '100%' }}
               onChange={e => {
-                productStatus() ? setValue(e) : undefined
+                onQtyChange(e)
               }}
               required
               min={0}
               step={1}
-              stringMode
+              // stringMode
               formatter={value => limitDecimalPoint(value)}
               parser={value => priceFilterPointNoNum(value)}
               controls={false}
-              onBlur={intergerOnBule}
+              onBlur={onBlur}
               // variant='filled'
               onKeyDown={e => keyBoardChange(e, cell)}
             />
@@ -179,7 +214,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
           <Form.Item
             style={{ margin: 0 }}
             name={`${column.id + row.id}`}
-            initialValue={initialValue}
+            initialValue={value}
             rules={[
               { required: true, message: `` }
               // { pattern: /^[0-9]+$/, message: '' }
@@ -191,10 +226,11 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               autoFocus
               size='small'
               style={{ width: '100%', height: '100%' }}
-              onChange={e => setValue(e)}
+              onChange={e => {
+                onPriceChange(e)
+              }}
               required
               min={0}
-              max={columnMeta.num_max ? 1 : undefined}
               stringMode
               formatter={limitDecimal}
               parser={priceFilterNoNum}
@@ -220,9 +256,10 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               size='small'
               autoFocus
               placeholder='请填写信息'
-              onChange={e => onInputChange(e)}
+              onChange={e => {
+                productStatus() ? setValue(e.target.value) : undefined
+              }}
               onBlur={onBlur}
-              variant='filled'
               onKeyDown={e => keyBoardChange(e, cell)}
             />
           </Form.Item>

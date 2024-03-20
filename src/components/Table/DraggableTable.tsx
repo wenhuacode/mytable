@@ -7,6 +7,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { FormInstance } from 'antd'
 import { HolderOutlined } from '@ant-design/icons'
+import { OrderCenter } from './columns'
 
 const DraggableTableHeader = ({
   header,
@@ -14,7 +15,7 @@ const DraggableTableHeader = ({
   columnResizeMode
 }: {
   header: Header<any, unknown>
-  table: Table<any>
+  table: any
   columnResizeMode: ColumnResizeMode
 }) => {
   const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({
@@ -83,7 +84,7 @@ const DragAlongCell = ({
   setEditedRows: any
   row: any
   form: FormInstance
-  table: Table<any>
+  table: any
 }) => {
   const { isDragging, setNodeRef, transform } = useSortable({
     id: cell.column.id
@@ -114,18 +115,20 @@ const DragAlongCell = ({
       className='px-0.1 py-0.0  text-sm  text-gray-800 dark:text-gray-200'
       onKeyDown={e => {
         if (e.code === 'Enter' || e.code === 'NumpadEnter') {
-          //校验产品栏是否存在值
-          if (cell.row.getValue('productName') !== undefined) {
-            const tableMeta: any = table.options.meta
-            const cellvalue = form.getFieldValue(cell.column.id + row.id)
-
-            if (cellvalue) {
-              //校验表单值是否合法
-              //将表单的值更新
-              tableMeta.updateData(row.index, cell.column.id, form.getFieldValue(cell.column.id + row.id))
+          // 判断开启或者关闭
+          if (table.options.meta?.editedRows[cell.column.id + row.id]) {
+            //校验产品栏是否存在值
+            if (cell.row.getValue('productName') !== undefined && cell.column.id !== 'productName') {
+              const tableMeta: any = table.options.meta
+              const cellvalue = form.getFieldValue(cell.column.id + row.id)
+              if (cellvalue) {
+                //校验表单值是否合法
+                //将表单的值更新
+                tableMeta.updateData(row.index, cell.column.id, cellvalue)
+              }
+            } else {
+              form.resetFields()
             }
-          } else {
-            form.resetFields()
           }
 
           setEditedRows((old: []) => ({

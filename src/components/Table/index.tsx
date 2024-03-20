@@ -86,6 +86,21 @@ export const WhTable = () => {
             return row
           })
         )
+        form.resetFields() //清除form 内容
+      },
+      updateRowData: (rowIndex: number, value: object) => {
+        setData(old =>
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                // ...old[rowIndex],
+                ...value
+              }
+            }
+            return row
+          })
+        )
+        form.resetFields() //清除form 内容
       },
       addRow: () => {
         const newRow: any = {

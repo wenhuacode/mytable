@@ -2,8 +2,9 @@ import { createColumnHelper } from '@tanstack/react-table'
 import TableCell from './TableCell'
 import EditCell from './EditCell'
 import { formattedNum } from './util'
+import Big from 'big.js'
 
-type OrderCenter = {
+export type OrderCenter = {
   productName?: string
   barcode?: string
   qty?: number
@@ -72,7 +73,12 @@ export const columns = [
     },
     size: 40,
     footer: ({ table }) =>
-      table.getFilteredRowModel().rows.reduce((total, row) => total + formattedNum(row.getValue('qty')), 0)
+      // table.getFilteredRowModel().rows.reduce((total, row) => total + formattedNum(row.getValue('qty')), 0)
+      Number(
+        table
+          .getFilteredRowModel()
+          .rows.reduce((total, row) => total.add(formattedNum(row.getValue('qty'))), new Big(0))
+      )
   }),
 
   columnHelper.accessor('price', {
@@ -94,7 +100,12 @@ export const columns = [
       type: 'number',
       edit: false
     },
-
+    footer: ({ table }) =>
+      Number(
+        table
+          .getFilteredRowModel()
+          .rows.reduce((total, row) => total.add(formattedNum(row.getValue('total'))), new Big(0))
+      ),
     size: 40
   }),
 
@@ -133,7 +144,11 @@ export const columns = [
       required: true
     },
     footer: ({ table }) =>
-      table.getFilteredRowModel().rows.reduce((total, row) => total + formattedNum(row.getValue('discountTotal')), 0),
+      Number(
+        table
+          .getFilteredRowModel()
+          .rows.reduce((total, row) => total.add(formattedNum(row.getValue('discountTotal'))), new Big(0))
+      ),
     size: 40
   }),
 
@@ -142,9 +157,13 @@ export const columns = [
     header: '赠品',
     cell: TableCell,
     meta: {
-      type: 'number',
+      type: 'select',
       edit: true,
-      required: true
+      required: true,
+      options: [
+        { label: '是', value: 1 },
+        { label: '否', value: 0 }
+      ]
     },
     size: 40
   }),
@@ -157,6 +176,12 @@ export const columns = [
       type: 'text',
       edit: false
     },
+    footer: ({ table }) =>
+      Number(
+        table
+          .getFilteredRowModel()
+          .rows.reduce((total, row) => total.add(formattedNum(row.getValue('box'))), new Big(0))
+      ),
     size: 40
   }),
 

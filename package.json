@@ -20,7 +20,6 @@
     "@emotion/styled": "^11.11.0",
     "@table-nav/core": "^0.0.7",
     "@table-nav/react": "^0.0.7",
-    "@tanstack/react-table": "^8.9.1",
     "@types/node": "18.16.1",
     "antd": "^5.15.2",
     "dayjs": "^1.11.10",
@@ -30,12 +29,15 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@tanstack/react-table": "^8.14.0",
+    "@types/big.js": "^6.2.2",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.18",
+    "big.js": "^6.2.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
