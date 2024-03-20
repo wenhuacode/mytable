@@ -85,6 +85,8 @@ export const getNewCellID = (e: string, cell: any, table: Table<any>) => {
   return { cell_id, new_column_id, status }
 }
 
+
+
 // 判断产品是否已经录入
 const productStatus = (cell: Cell<any, any>) => {
   return cell.row.getValue('productName') !== undefined

@@ -32,7 +32,7 @@ import { DragAlongCell, DraggableTableHeader, handleDragEnd } from './DraggableT
 
 export const WhTable = () => {
   const [data, setData] = useState(() => [...defaultData])
-  const [originalData, setOriginalData] = useState(() => [...defaultData])
+  // const [originalData, setOriginalData] = useState(() => [...defaultData])
   const [editedRows, setEditedRows] = useState({})
 
   const [form] = Form.useForm<FormInstance>()
@@ -67,13 +67,13 @@ export const WhTable = () => {
       selectProductShow,
       setSelectProductShow,
       ////////////////////////////////////////////////////////////////
-      revertData: (rowIndex: number, revert: boolean) => {
-        if (revert) {
-          setData(old => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)))
-        } else {
-          setOriginalData(old => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)))
-        }
-      },
+      // revertData: (rowIndex: number, revert: boolean) => {
+      //   if (revert) {
+      //     setData(old => old.map((row, index) => (index === rowIndex ? originalData[rowIndex] : row)))
+      //   } else {
+      //     setOriginalData(old => old.map((row, index) => (index === rowIndex ? data[rowIndex] : row)))
+      //   }
+      // },
       updateData: (rowIndex: number, columnId: string, value: string) => {
         setData(old =>
           old.map((row, index) => {
@@ -103,26 +103,28 @@ export const WhTable = () => {
         form.resetFields() //清除form 内容
       },
       addRow: () => {
-        const newRow: any = {
-          studentId: '',
-          name: '',
-          dateOfBirth: dayjs().format('YYYY-MM-DD'),
-          major: ''
-        }
+        const newRow: any = {}
         const setFunc = (old: any[]) => [...old, newRow]
         setData(setFunc)
-        setOriginalData(setFunc)
+        // setOriginalData(setFunc)
+      },
+      addRowIndex: () => {},
+      copyRow: (rowIndex: number) => {
+        const newRow = data[rowIndex]
+        const setFunc = (old: any[]) => [...old, newRow]
+        setData(setFunc)
+        // setOriginalData(setFunc)
       },
       removeRow: (rowIndex: number) => {
         const setFilterFunc = (old: any[]) => old.filter((_row: any, index: number) => index !== rowIndex)
         setData(setFilterFunc)
-        setOriginalData(setFilterFunc)
+        // setOriginalData(setFilterFunc)
         form.resetFields() //清除form 内容
       },
       removeSelectedRows: (selectedRows: number[]) => {
         const setFilterFunc = (old: any[]) => old.filter((_row, index) => !selectedRows.includes(index))
         setData(setFilterFunc)
-        setOriginalData(setFilterFunc)
+        // setOriginalData(setFilterFunc)
         form.resetFields() //清除form 内容
       }
     }

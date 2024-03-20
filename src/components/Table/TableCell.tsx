@@ -191,6 +191,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               className='wh_table_date_picker'
               autoFocus
               size='small'
+              keyboard={false}
               style={{ width: '100%', height: '100%' }}
               onChange={e => {
                 onQtyChange(e)
@@ -231,6 +232,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               }}
               required
               min={0}
+              keyboard={false}
               stringMode
               formatter={limitDecimal}
               parser={priceFilterNoNum}

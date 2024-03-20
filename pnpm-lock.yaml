@@ -35,9 +35,6 @@ dependencies:
   '@table-nav/react':
     specifier: ^0.0.7
     version: 0.0.7(@table-nav/core@0.0.7)
-  '@tanstack/react-table':
-    specifier: ^8.9.1
-    version: 8.13.2(react-dom@18.2.0)(react@18.2.0)
   '@types/node':
     specifier: 18.16.1
     version: 18.16.1
@@ -61,6 +58,12 @@ dependencies:
     version: 18.2.0(react@18.2.0)
 
 devDependencies:
+  '@tanstack/react-table':
+    specifier: ^8.14.0
+    version: 8.14.0(react-dom@18.2.0)(react@18.2.0)
+  '@types/big.js':
+    specifier: ^6.2.2
+    version: 6.2.2
   '@types/react':
     specifier: ^18.2.64
     version: 18.2.64
@@ -79,6 +82,9 @@ devDependencies:
   autoprefixer:
     specifier: ^10.4.18
     version: 10.4.18(postcss@8.4.36)
+  big.js:
+    specifier: ^6.2.1
+    version: 6.2.1
   eslint:
     specifier: ^8.57.0
     version: 8.57.0
@@ -2218,22 +2224,22 @@ packages:
       '@table-nav/core': 0.0.7
     dev: false
 
-  /@tanstack/react-table@8.13.2(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-b6mR3mYkjRtJ443QZh9sc7CvGTce81J35F/XMr0OoWbx0KIM7TTTdyNP2XKObvkLpYnLpCrYDwI3CZnLezWvpg==}
+  /@tanstack/react-table@8.14.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-l9iwO99oz/azy5RT5VkVRsHHuy7o//fiXgLxzl3fad8qf7Bj+9ihsfmE6Q+BNjH4wHbxZkahwxtb3ngGq9FQxA==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
     dependencies:
-      '@tanstack/table-core': 8.13.2
+      '@tanstack/table-core': 8.14.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-    dev: false
+    dev: true
 
-  /@tanstack/table-core@8.13.2:
-    resolution: {integrity: sha512-/2saD1lWBUV6/uNAwrsg2tw58uvMJ07bO2F1IWMxjFRkJiXKQRuc3Oq2aufeobD3873+4oIM/DRySIw7+QsPPw==}
+  /@tanstack/table-core@8.14.0:
+    resolution: {integrity: sha512-wDhpKJahGHWhmRt4RxtV3pES63CoeadljGWS/xeS9OJr1HBl2NB+OO44ht3sxDH5j5TRDAbQzC0NvSlsUfn7lQ==}
     engines: {node: '>=12'}
-    dev: false
+    dev: true
 
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2262,6 +2268,10 @@ packages:
     resolution: {integrity: sha512-WXCyOcRtH37HAUkpXhUduaxdm82b4GSlyTqajXviN4EfiuPgNYR109xMCKvpl6zPIpua0DGlMEDCq+g8EdoheQ==}
     dependencies:
       '@babel/types': 7.24.0
+    dev: true
+
+  /@types/big.js@6.2.2:
+    resolution: {integrity: sha512-e2cOW9YlVzFY2iScnGBBkplKsrn2CsObHQ2Hiw4V1sSyiGbgWL8IyqE3zFi1Pt5o1pdAtYkDAIsF3KKUPjdzaA==}
     dev: true
 
   /@types/estree@1.0.5:
@@ -2658,6 +2668,10 @@ packages:
 
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+    dev: true
+
+  /big.js@6.2.1:
+    resolution: {integrity: sha512-bCtHMwL9LeDIozFn+oNhhFoq+yQ3BNdnsLSASUxLciOb1vgvpHsIO1dsENiGMgbb4SkP5TrzWzRiLddn8ahVOQ==}
     dev: true
 
   /binary-extensions@2.3.0:
@@ -3464,7 +3478,6 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
-    dev: false
 
   /lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
@@ -4292,7 +4305,6 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
-    dev: false
 
   /react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
@@ -4387,7 +4399,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -4467,7 +4478,6 @@ packages:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /scroll-into-view-if-needed@3.1.0:
     resolution: {integrity: sha512-49oNpRjWRvnU8NyGVmUaYG4jtTkNonFZI86MmGRDqBphEK2EXT9gdEUoQPZhuBM8yWHxCWbobltqYO5M4XrUvQ==}

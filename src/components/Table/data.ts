@@ -23,7 +23,7 @@ export const defaultData: OrderCenter[] = [
     discount: 1,
     discountPrice: 56.0,
     discountTotal: 168.0,
-    giveaway: 1,
+    giveaway: 0,
     box: 1,
     boxRule: 3,
     note: 'test'
@@ -37,7 +37,7 @@ export const defaultData: OrderCenter[] = [
     discount: 1,
     discountPrice: 56.0,
     discountTotal: 168.0,
-    giveaway: 1,
+    giveaway: 0,
     box: 1,
     boxRule: 3,
     note: 'test'
@@ -51,7 +51,7 @@ export const defaultData: OrderCenter[] = [
     discount: 1,
     discountPrice: 56.0,
     discountTotal: 168.0,
-    giveaway: 1,
+    giveaway: 0,
     box: 1,
     boxRule: 3,
     note: 'test'
@@ -65,7 +65,7 @@ export const defaultData: OrderCenter[] = [
     discount: 1,
     discountPrice: 56.0,
     discountTotal: 168.0,
-    giveaway: 1,
+    giveaway: 0,
     box: 1,
     boxRule: 3,
     note: 'test'
@@ -79,7 +79,7 @@ export const defaultData: OrderCenter[] = [
     discount: 1,
     discountPrice: 56.0,
     discountTotal: 168.0,
-    giveaway: 1,
+    giveaway: 0,
     box: 1,
     boxRule: 3,
     note: 'test'
@@ -93,7 +93,7 @@ export const defaultData: OrderCenter[] = [
     discount: 1,
     discountPrice: 56.0,
     discountTotal: 168.0,
-    giveaway: 1,
+    giveaway: 0,
     box: 1,
     boxRule: 3,
     note: 'test'

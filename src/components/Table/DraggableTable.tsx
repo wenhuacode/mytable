@@ -8,6 +8,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { FormInstance } from 'antd'
 import { HolderOutlined } from '@ant-design/icons'
 import { OrderCenter } from './columns'
+import { changeRowData } from './util'
 
 const DraggableTableHeader = ({
   header,
@@ -124,7 +125,10 @@ const DragAlongCell = ({
               if (cellvalue) {
                 //校验表单值是否合法
                 //将表单的值更新
-                tableMeta.updateData(row.index, cell.column.id, cellvalue)
+                // tableMeta.updateData(row.index, cell.column.id, cellvalue)
+                changeRowData(tableMeta, cell, cellvalue)
+              } else {
+                return
               }
             } else {
               form.resetFields()

@@ -3,7 +3,7 @@ import { Button, Space } from 'antd'
 import { EditOutlined, DeleteOutlined, CheckOutlined, CopyOutlined } from '@ant-design/icons'
 
 const EditCell = ({ row, column, table }: any) => {
-  const meta = table.options.meta
+  const tableMeta = table.options.meta
 
   const setEditedRows = (e: MouseEvent<HTMLButtonElement>) => {
     const elName = e.currentTarget.name
@@ -17,12 +17,16 @@ const EditCell = ({ row, column, table }: any) => {
   }
 
   const removeRow = () => {
-    meta?.removeRow(row.index)
+    tableMeta?.removeRow(row.index)
+  }
+
+  const copyRow = () => {
+    tableMeta?.copyRow(row.index)
   }
 
   return (
     <span style={{ whiteSpace: 'nowrap' }}>
-      {meta?.editedRows[row.id] ? (
+      {tableMeta?.editedRows[row.id] ? (
         <span>
           {/* <Button size='small' onClick={setEditedRows} name='cancel' icon={<CloseOutlined />} /> */}
           <Button size='small' onClick={setEditedRows} name='done' icon={<CheckOutlined />} />
@@ -37,7 +41,7 @@ const EditCell = ({ row, column, table }: any) => {
             style={{ marginRight: '5px' }}
             icon={<DeleteOutlined />}
           />
-          <Button size='small' onClick={removeRow} name='edit' icon={<CopyOutlined />} />
+          <Button size='small' onClick={copyRow} name='edit' icon={<CopyOutlined />} />
         </span>
       )}
       {/* <Input type='checkbox' checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} /> */}

@@ -21,7 +21,7 @@ export type OrderCenter = {
 
 const columnHelper = createColumnHelper<OrderCenter>()
 
-export const columns = [
+export const columns = [ 
   columnHelper.display({
     id: 'no',
     header: '',
