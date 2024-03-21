@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react'
 import { Button, Space } from 'antd'
-import { EditOutlined, DeleteOutlined, CheckOutlined, CopyOutlined } from '@ant-design/icons'
+import { EditOutlined, DeleteOutlined, CheckOutlined, CopyOutlined, FileAddOutlined } from '@ant-design/icons'
 
 const EditCell = ({ row, column, table }: any) => {
   const tableMeta = table.options.meta
@@ -16,34 +16,26 @@ const EditCell = ({ row, column, table }: any) => {
     // }
   }
 
-  const removeRow = () => {
+  const removeRow = async () => {
     tableMeta?.removeRow(row.index)
   }
 
-  const copyRow = () => {
+  const copyRow = async () => {
     tableMeta?.copyRow(row.index)
+  }
+
+  const addRow = async () => {
+    tableMeta?.addRowIndex(row.index)
   }
 
   return (
     <span style={{ whiteSpace: 'nowrap' }}>
-      {tableMeta?.editedRows[row.id] ? (
-        <span>
-          {/* <Button size='small' onClick={setEditedRows} name='cancel' icon={<CloseOutlined />} /> */}
-          <Button size='small' onClick={setEditedRows} name='done' icon={<CheckOutlined />} />
-        </span>
-      ) : (
-        <span style={{ whiteSpace: 'nowrap' }}>
-          {/* <Button size='small' onClick={setEditedRows} name='edit' icon={<EditOutlined />} /> */}
-          <Button
-            size='small'
-            onClick={removeRow}
-            name='copy'
-            style={{ marginRight: '5px' }}
-            icon={<DeleteOutlined />}
-          />
-          <Button size='small' onClick={copyRow} name='edit' icon={<CopyOutlined />} />
-        </span>
-      )}
+      <span style={{ whiteSpace: 'nowrap' }}>
+        {/* <Button size='small' onClick={setEditedRows} name='edit' icon={<EditOutlined />} /> */}
+        <Button size='small' onClick={removeRow} name='copy' style={{ marginRight: '5px' }} icon={<DeleteOutlined />} />
+        <Button size='small' onClick={copyRow} name='edit' icon={<CopyOutlined />} />
+        <Button size='small' onClick={addRow} name='add' icon={<FileAddOutlined />} />
+      </span>
       {/* <Input type='checkbox' checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} /> */}
     </span>
   )

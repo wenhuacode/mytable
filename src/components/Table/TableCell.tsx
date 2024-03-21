@@ -35,7 +35,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     return cell.row.getValue('productName') !== undefined
   }
 
-  const onBlur = () => {
+  const onBlur = async () => {
     if (productStatus()) {
       // tableMeta?.updateData(row.index, column.id, value)
       // 数据设置
@@ -48,7 +48,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
   }
 
   //数量change
-  const onQtyChange = (e: any) => {
+  const onQtyChange = async (e: any) => {
     if (productStatus()) {
       if (!e || e === 0 || e === null) {
         setValue(1)
@@ -58,7 +58,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     }
   }
 
-  const onPriceChange = (e: any) => {
+  const onPriceChange = async (e: any) => {
     if (productStatus()) {
       if (!e || e === 0 || e === null) {
         setValue(0)
@@ -68,18 +68,17 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
     }
   }
 
-  const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    console.log(e)
+  const onSelectChange = async (e: ChangeEvent<HTMLSelectElement>) => {
     if (productStatus()) {
       setValue(e)
 
-      changeRowData(tableMeta, cell, e)
+      await changeRowData(tableMeta, cell, e)
     }
 
     editCellStatus()
   }
 
-  const editCellStatus = () => {
+  const editCellStatus = async () => {
     tableMeta?.setEditedRows((old: []) => ({
       ...old,
       [column.id + row.id]: !old[column.id + row.id]
@@ -141,7 +140,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               defaultOpen={true}
               size='small'
               style={{ width: '100%', height: '100%' }}
-              onKeyDown={e => keyBoardChange(e, cell)}
+              onKeyDown={async e => await keyBoardChange(e, cell)}
             >
               {columnMeta?.options?.map((option: Option) => (
                 <Select.Option key={option.value} value={option.value}>
@@ -166,11 +165,11 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               size='small'
               autoFocus
               placeholder='请填写信息'
-              onClick={e => onProductClick(e, cell)}
+              onClick={async e => await onProductClick(e, cell)}
               // onChange={e => onInputChange(e)}
               onBlur={onBlur}
               variant='filled'
-              onKeyDown={e => keyBoardChange(e, cell)}
+              onKeyDown={async e => await keyBoardChange(e, cell)}
             />
           </Form.Item>
         )
@@ -193,8 +192,8 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               size='small'
               keyboard={false}
               style={{ width: '100%', height: '100%' }}
-              onChange={e => {
-                onQtyChange(e)
+              onChange={async e => {
+                await onQtyChange(e)
               }}
               required
               min={0}
@@ -205,7 +204,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               controls={false}
               onBlur={onBlur}
               // variant='filled'
-              onKeyDown={e => keyBoardChange(e, cell)}
+              onKeyDown={async e => await keyBoardChange(e, cell)}
             />
           </Form.Item>
         )
@@ -227,8 +226,8 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               autoFocus
               size='small'
               style={{ width: '100%', height: '100%' }}
-              onChange={e => {
-                onPriceChange(e)
+              onChange={async e => {
+                await onPriceChange(e)
               }}
               required
               min={0}
@@ -239,7 +238,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
               controls={false}
               onBlur={onBlur}
               // variant='filled'
-              onKeyDown={e => keyBoardChange(e, cell)}
+              onKeyDown={async e => await keyBoardChange(e, cell)}
             />
           </Form.Item>
         )
@@ -262,7 +261,7 @@ const TableCell = ({ getValue, row, column, table, cell }: any) => {
                 productStatus() ? setValue(e.target.value) : undefined
               }}
               onBlur={onBlur}
-              onKeyDown={e => keyBoardChange(e, cell)}
+              onKeyDown={async e => await keyBoardChange(e, cell)}
             />
           </Form.Item>
         )

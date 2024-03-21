@@ -21,13 +21,14 @@ export type OrderCenter = {
 
 const columnHelper = createColumnHelper<OrderCenter>()
 
-export const columns = [ 
+export const columns = [
   columnHelper.display({
     id: 'no',
     header: '',
     cell: ({ row, table }) =>
       (table.getSortedRowModel()?.flatRows?.findIndex(flatRow => flatRow.id === row.id) || 0) + 1,
     footer: '合计',
+    enablePinning: true,
     size: 30
   }),
 

@@ -85,8 +85,6 @@ export const getNewCellID = (e: string, cell: any, table: Table<any>) => {
   return { cell_id, new_column_id, status }
 }
 
-
-
 // 判断产品是否已经录入
 const productStatus = (cell: Cell<any, any>) => {
   return cell.row.getValue('productName') !== undefined
@@ -98,7 +96,7 @@ export const onInputNumberChange = (value: any, setValue: any, cell: Cell<any, a
   setValue(value)
 }
 
-export const changeRowData = (tableMeta: any, cell: any, value: any) => {
+export const changeRowData = async (tableMeta: any, cell: any, value: any) => {
   // 获取当前行的值
   const row_value = cell.row.original
 
